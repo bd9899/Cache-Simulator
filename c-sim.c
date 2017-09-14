@@ -72,13 +72,11 @@ int cacheFIFO(struct Cache *cache, int tag, int setIndex, char instruction){
         ptr->TAG = tag;
         return 1;
     }else{ //last line is valid, check tag for hit or miss or evict
-        //printf("%c\n", instruction);
         if(tag == ptr->TAG){//wb vs wt write hits
             cache->hits++;
             if(instruction == 'W' && ptr->dirtyBit == -1){
                 cache->writes++;
             }else if(instruction == 'W' && (ptr->dirtyBit == 0 || ptr->dirtyBit == 1)){
-                //printf("wb\n");
                 ptr->dirtyBit = 1;
             }
         }else{ //eviction
@@ -86,19 +84,15 @@ int cacheFIFO(struct Cache *cache, int tag, int setIndex, char instruction){
             if(instruction == 'R'){
                 if(front->dirtyBit == 1){
                     cache->writes++;
-                    printf("hello\n");
                 }
                 cache->reads++;
                 front->TAG = tag;
             }if(instruction == 'W'){
-                //printf("hello\n");
                 if(front->dirtyBit == -1 || front->dirtyBit == 0){ //wt or if wb is not changed
-                    printf("hello1\n");
                     cache->reads++;
                     cache->writes++;
                     front->TAG = tag;                  //eviction of first input item
                 }else if(front->dirtyBit == 1){
-                    printf("hello\n");//wb
                     cache->writes+=2;
                     cache->reads++;
                     front->TAG = tag;
